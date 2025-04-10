@@ -631,7 +631,7 @@ int login(int *isAdmin)
         return 0;
     }
 
-    printf("----- Login Page -----\n");
+    printf("\n----- Login Page -----\n");
     printf("\nEnter Username: ");
     scanf("%s", username);
     printf("Enter Password: ");
