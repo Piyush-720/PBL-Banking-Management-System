@@ -796,7 +796,7 @@ int main()
         default:
             printf("Invalid choice! Please try again.\n");
         }
-    } while (choice != 0);
+    } while (choice != 15);
 
     return 0;
 }
