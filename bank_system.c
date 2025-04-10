@@ -14,18 +14,16 @@ struct Account
 };
 
 // Function to create a new account
-// Function to create a new account
 void createAccount()
 {
     FILE *fp, *accNumFile;
     struct Account acc;
     int lastAccountNumber = 1000; // Starting account number
     char prefix[] = "AC";         // Prefix for account numbers
-    int valid = 0;
 
     // Open the file to store the last account number
     accNumFile = fopen("account_number.txt", "r");
-    if (accNumFile)
+    if (accNumFile != NULL)
     {
         fscanf(accNumFile, "%d", &lastAccountNumber);
         fclose(accNumFile);
@@ -36,47 +34,35 @@ void createAccount()
     sprintf(acc.account_number, "%sxxxx%d", prefix, lastAccountNumber);
 
     fp = fopen("bank.txt", "ab");
-    if (!fp)
+    if (fp == NULL)
     {
         printf("Error opening file!\n");
         return;
     }
 
     // Validate name (only letters)
-    do
+    printf("Enter Account Holder's Name: ");
+    getchar(); // Clear buffer
+    fgets(acc.name, sizeof(acc.name), stdin);
+    acc.name[strcspn(acc.name, "\n")] = '\0'; // Remove newline
+    int i = 0;
+    while(i < strlen(acc.name))
     {
-        printf("Enter Name (letters only): ");
-        getchar(); // Clear buffer
-        fgets(acc.name, sizeof(acc.name), stdin);
-        acc.name[strcspn(acc.name, "\n")] = '\0'; // Remove newline
-
-        valid = 1; // Assume valid until proven otherwise
-        for (int i = 0; i < strlen(acc.name); i++)
+        if(!isalpha(acc.name[i]) && acc.name[i] != ' ')
         {
-            if (!isalpha(acc.name[i]) && acc.name[i] != ' ') // Allow letters and spaces
-            {
-                valid = 0;
-                printf("Invalid name. Please use letters only.\n");
-                break;
-            }
+            printf("Invalid name. Please use letters only.\n");
+            return;
         }
-    } while (!valid);
+        i++;
+    }
 
-    // Validate PIN (exactly 4 digits)
-    do
+    printf("Set a 4-digit PIN for your account: ");
+    scanf("%d", &acc.pin);
+    while (acc.pin < 1000 || acc.pin > 9999) // Ensure PIN is exactly 4 digits
     {
-        printf("Set a 4-digit PIN for your account: ");
+        printf("Invalid PIN. Please enter a 4-digit number: ");
         scanf("%d", &acc.pin);
-
-        if (acc.pin < 1000 || acc.pin > 9999) // Ensure PIN is exactly 4 digits
-        {
-            printf("Invalid PIN. Please enter a 4-digit number.\n");
-        }
-        else
-        {
-            valid = 1;
-        }
-    } while (!valid);
+    }
 
     // Validate initial deposit amount
     do
@@ -112,7 +98,7 @@ void displayAllAccounts()
     int accountFound = 0;
 
     fp = fopen("bank.txt", "rb");
-    if (!fp)
+    if (fp == NULL)
     {
         printf("No data found.\n");
         return;
@@ -127,7 +113,7 @@ void displayAllAccounts()
         printf("Balance: %.2f\n\n", acc.balance);
     }
 
-    if (!accountFound)
+    if (accountFound == 0)
     {
         printf("No existing accounts found.\n");
     }
@@ -144,7 +130,7 @@ void deleteAccount()
 
     fp = fopen("bank.txt", "rb");
     temp = fopen("temp.txt", "wb");
-    if (!fp || !temp)
+    if (fp == NULL || temp == NULL)
     {
         printf("Error opening files.\n");
         return;
